@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+
+// Note: This API route is not used in the static Cloudflare Pages deployment.
+// The contact form submits directly to Web3Forms instead.
+// This file exists only for local development/testing.
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, phone, service, message } = body
+    const { name, email, service, message } = body
 
     if (!name || !email || !service || !message) {
       return NextResponse.json(
@@ -13,20 +16,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Save to database
-    const contact = await prisma.contactSubmission.create({
-      data: {
-        name,
-        email,
-        phone: phone || null,
-        service,
-        message,
-        status: 'NEW',
-      },
-    })
+    // In production (Cloudflare Pages), the form submits directly to Web3Forms
+    // This endpoint is only for local development
+    console.log('Contact form submission:', { name, email, service, message })
 
     return NextResponse.json(
-      { success: true, id: contact.id },
+      { success: true, message: 'Form received (dev mode)' },
       { status: 200 }
     )
   } catch (error) {
